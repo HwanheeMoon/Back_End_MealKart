@@ -1,5 +1,6 @@
 package com.springboot.mealkart.domain;
 
+
 import com.springboot.mealkart.util.UtilMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,34 +12,34 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "TB_REVIEW")
+@Table(name = "TB_ORDERING_DETAIL")
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class OrderingDetail {
 
     @Id
-    @Column(name = "REVIEW_UUID")
-    private String reviewUuid;
+    @Column(name = "ORDER_DEATAIL_UUID")
+    private String orderDetailUuid;
 
-    @Column(name = "SCORE")
-    private Float score;
-
-    @Column(name = "CONTENT")
-    private String content;
-
-    @Column(name = "IMAGE")
-    private String image;
+    @Column(name = "ORDER_UUID")
+    private String orderUuid;
 
     @Column(name = "PRODUCT_UUID")
     private String productUuid;
 
-    // 작성자
-    @Column(name = "USER_UUID")
-    private String userUuid;
+    @Column(name = "PRICE")
+    private Integer price;
+
+    @Column(name = "QUANTITY")
+    private Integer quantity;
+
+    @Column(name = "DELIVERY_CD")
+    private String deliveryCd;
 
     @Column(name = "USE_YN")
     private String useYn;
@@ -52,21 +53,21 @@ public class Review {
     private LocalDateTime modifyDate;
 
     @Builder
-    public Review (Float score,
-                   String content,
-                   String image,
-                   String productUuid,
-                   String userUuid,
-                   LocalDateTime createDate,
-                   LocalDateTime modifyDate) {
-        this.reviewUuid = UtilMethod.createUUID();
-        this.score = score;
-        this.content = content;
-        this.image = image;
+    public OrderingDetail (String orderUuid,
+                           String productUuid,
+                           Integer price,
+                           Integer quantity,
+                           String deliveryCd,
+                           LocalDateTime createDate,
+                           LocalDateTime modifyDate) {
+        this.orderDetailUuid = UtilMethod.createUUID();
+        this.orderUuid = orderUuid;
         this.productUuid = productUuid;
-        this.userUuid = userUuid;
-        this.useYn = "Y";
+        this.price = price;
+        this.quantity = quantity;
+        this.deliveryCd = deliveryCd;
         this.createDate = createDate;
         this.modifyDate = modifyDate;
+        this.useYn = "Y";
     }
 }
