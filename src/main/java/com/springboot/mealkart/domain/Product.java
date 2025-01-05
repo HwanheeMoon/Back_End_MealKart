@@ -1,6 +1,7 @@
 package com.springboot.mealkart.domain;
 
 import com.springboot.mealkart.enumerate.ProductStatus;
+import com.springboot.mealkart.util.UtilMethod;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -46,15 +47,15 @@ public class Product {
     private Integer saleRate;
 
     @CreationTimestamp
-    @Column(name = "CREATE_DT")
+    @Column(name = "REG_DT")
     private LocalDateTime createDate;
 
     @UpdateTimestamp
     @Column(name = "LAST_DT")
     private LocalDateTime modifyDate;
 
-    @Column(name = "USE_YN")
-    private Character useYN;
+    @Column(name = "USE_YN", columnDefinition = "VARCHAR(1)")
+    private String useYn;
 
     @Column(name = "SELLER_UUID")
     private String sellerUuid;
@@ -67,27 +68,29 @@ public class Product {
                    String brand,
                    ProductStatus storeStatus,
                    Long price,
-                   int saleRate,
+                   Integer saleRate,
+                   String sellerUuid,
                    LocalDateTime createDate,
                    LocalDateTime modifyDate) {
-        //this.productUuid = CreateUuid()
+        this.productUuid = UtilMethod.createUUID();
         this.name = name;
         this. description = description;
         this.titleImg = titleImg;
-        this. detailImg = detailImg;
+        this.detailImg = detailImg;
         this.brand = brand;
         this.storeStatus = storeStatus;
         this.price = price;
         this.saleRate = saleRate;
         this.createDate = createDate;
         this.modifyDate = modifyDate;
-        this.useYN = 'Y';
+        this.useYn = "Y";
+        this.sellerUuid = sellerUuid;
     }
 
     @PreUpdate
     public void preUpdate() {this.createDate = LocalDateTime.now();}
 
 
-    }
+}
 
 
