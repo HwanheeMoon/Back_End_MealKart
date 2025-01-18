@@ -1,24 +1,19 @@
 package com.springboot.mealkart.domain;
 
-import com.springboot.mealkart.util.UtilMethod;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.springboot.mealkart.common.domain.BaseDomain;
+import com.springboot.mealkart.common.util.UtilMethod;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "TB_CUSTOMER_MANAGE")
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class CustomerManage {
+public class CustomerManage extends BaseDomain {
 
     @Id
     @Column(name = "CUSTOMER_MANAGE_UUID")
@@ -37,8 +32,9 @@ public class CustomerManage {
     @Column(name = "ANWSER")
     private String answer;
 
-    @Column(name = "PRODUCT_UUID")
-    private String productUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRODUCT_UUID")
+    private Product productUuid;
 
     // 접수(0), 처리중(1), 완료(2) => 상태 코드값
     @Column(name = "MANAGE_CD")
@@ -52,38 +48,35 @@ public class CustomerManage {
     @Column(name = "LAST_ID")
     private String lastId;
 
-    @Column(name = "USE_YN")
+    @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
 
-    @CreationTimestamp
-    @Column(name = "REG_DT")
-    private LocalDateTime createDate;
+    @PrePersist
+    public void prePersist() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+        this.manageCd = StringUtils.isEmpty(this.manageCd) ? "0" : this.manageCd;
+    }
 
-    @UpdateTimestamp
-    @Column(name = "LAST_DT")
-    private LocalDateTime modifyDate;
+    @PreUpdate
+    public void PreUpdate() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
     @Builder
     public CustomerManage (String title,
                            String content,
                            String attachment,
                            String answer,
-                           String productUuid,
+                           Product productUuid,
                            String regId,
-                           String lastId,
-                           LocalDateTime createDate,
-                           LocalDateTime modifyDate) {
+                           String lastId) {
         this.customerManageUuid = UtilMethod.createUUID();
         this.title = title;
         this.content = content;
         this.attachment = attachment;
         this.answer = answer;
         this.productUuid= productUuid;
-        this.manageCd = "0";
         this.regId = regId;
         this.lastId = lastId;
-        this.createDate = createDate;
-        this.modifyDate = modifyDate;
-        this.useYn = "Y";
     }
 }

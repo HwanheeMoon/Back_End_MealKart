@@ -1,23 +1,23 @@
 package com.springboot.mealkart.domain;
 
-import com.springboot.mealkart.util.UtilMethod;
+import com.springboot.mealkart.common.domain.BaseDomain;
+import com.springboot.mealkart.common.util.UtilMethod;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TB_ORDERING")
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ordering {
+public class Ordering extends BaseDomain {
 
+    // TODO 주문 번호 생성 메소드 필요
     @Id
     @Column(name = "ORDER_UUID")
     private String orderUuid;
@@ -37,22 +37,22 @@ public class Ordering {
     @Column(name = "TOTAL_PRICE")
     private BigInteger totalPrice;
 
-    @Column(name = "USER_UUID")
-    private String userUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_UUID")
+    private User userUuid;
 
-    @Column(name = "ORDERING_CD")
-    private String orderingCd;
-
-    @Column(name = "USE_YN")
+    @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
 
-    @CreationTimestamp
-    @Column(name = "REG_DT")
-    private LocalDateTime createDate;
+    @PrePersist
+    public void prePersist() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
-    @UpdateTimestamp
-    @Column(name = "LAST_DT")
-    private LocalDateTime modifyDate;
+    @PreUpdate
+    public void PreUpdate() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
     @Builder
     public Ordering (String message,
@@ -60,10 +60,7 @@ public class Ordering {
                     String receiveAdd,
                     String receivePhone,
                     BigInteger totalPrice,
-                    String userUuid,
-                    String orderingCd,
-                    LocalDateTime createDate,
-                    LocalDateTime modifyDate) {
+                    User userUuid) {
         this.orderUuid = UtilMethod.createUUID();
         this.message = message;
         this.receiveName = receiveName;
@@ -71,9 +68,5 @@ public class Ordering {
         this.receivePhone = receivePhone;
         this.totalPrice = totalPrice;
         this.userUuid = userUuid;
-        this.orderingCd = orderingCd;
-        this.createDate = createDate;
-        this.modifyDate = modifyDate;
-        this.useYn = "Y";
     }
 }

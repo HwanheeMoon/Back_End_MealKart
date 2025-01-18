@@ -1,35 +1,32 @@
 package com.springboot.mealkart.domain;
 
 
-import com.springboot.mealkart.util.UtilMethod;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.springboot.mealkart.common.domain.BaseDomain;
+import com.springboot.mealkart.common.util.UtilMethod;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "TB_PAYMENT")
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment {
+public class Payment extends BaseDomain {
 
     @Id
     @Column(name = "PAYMENT_UUID")
     private String paymentUuid;
 
-    @Column(name = "ORDERING_UUID")
-    private String orderingUuid;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDERING_UUID")
+    private Ordering orderingUuid;
 
-    @Column(name = "USER_UUID")
-    private String userUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_UUID")
+    private User userUuid;
 
     @Column(name = "PAYMENT_AMT")
     private Integer paymentAmt;
@@ -37,36 +34,33 @@ public class Payment {
     @Column(name = "PAYMENT_TYPE")
     private String paymentType;
 
-    @Column(name = "REFUND_YN")
+    // 환불 여부
+    @Column(name = "REFUND_YN", columnDefinition = "CHAR(1)")
     private String refundYn;
 
-    @Column(name = "USE_YN")
+    @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
 
-    @CreationTimestamp
-    @Column(name = "REG_DT")
-    private LocalDateTime createDate;
+    @PrePersist
+    public void prePersist() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+        this.refundYn = StringUtils.isEmpty(this.refundYn) ? "N" : this.refundYn;
+    }
 
-    @UpdateTimestamp
-    @Column(name = "LAST_DT")
-    private LocalDateTime modifyDate;
+    @PreUpdate
+    public void PreUpdate() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
     @Builder
-    public Payment (String orderingUuid,
-                    String userUuid,
+    public Payment (Ordering orderingUuid,
+                    User userUuid,
                     Integer paymentAmt,
-                    String paymentType,
-                    String refundYn,
-                    LocalDateTime createDate,
-                    LocalDateTime modifyDate) {
+                    String paymentType) {
         this.paymentUuid = UtilMethod.createUUID();
         this.orderingUuid = orderingUuid;
         this.userUuid = userUuid;
         this.paymentType = paymentType;
         this.paymentAmt = paymentAmt;
-        this.refundYn = refundYn;
-        this.useYn = "Y";
-        this.createDate = createDate;
-        this.modifyDate = modifyDate;
     }
 }
