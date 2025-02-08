@@ -1,29 +1,29 @@
 package com.springboot.mealkart.domain;
 
+import com.springboot.mealkart.common.domain.BaseDomain;
 import com.springboot.mealkart.enumerate.ProductStatus;
-import com.springboot.mealkart.util.UtilMethod;
+import com.springboot.mealkart.common.util.UtilMethod;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
+import java.math.BigInteger;
 
 @Entity
 @Table(name = "TB_PRODUCT")
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class Product {
+public class Product extends BaseDomain {
 
     @Id
     @Column(name = "PRODUCT_UUID")
     private String productUuid;
 
-    @Column(name = "NAME")
-    private String name;
+    @Column(name = "PRODUCT_NAME")
+    private String productName;
 
     @Column(name = "DESCRIPTION")
     private String description;
@@ -46,22 +46,28 @@ public class Product {
     @Column(name = "SALE_RATE")
     private Integer saleRate;
 
-    @CreationTimestamp
-    @Column(name = "REG_DT")
-    private LocalDateTime createDate;
+    @Column(name = "STOCK")
+    private BigInteger stock;
 
-    @UpdateTimestamp
-    @Column(name = "LAST_DT")
-    private LocalDateTime modifyDate;
-
-    @Column(name = "USE_YN", columnDefinition = "VARCHAR(1)")
+    @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
 
-    @Column(name = "SELLER_UUID")
-    private String sellerUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SELLER_UUID")
+    private Seller sellerUuid;
+
+    @PrePersist
+    public void prePersist() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
+
+    @PreUpdate
+    public void PreUpdate() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
     @Builder
-    public Product(String name,
+    public Product(String productName,
                    String description,
                    String titleImg,
                    String detailImg,
@@ -69,11 +75,11 @@ public class Product {
                    ProductStatus storeStatus,
                    Long price,
                    Integer saleRate,
-                   String sellerUuid,
-                   LocalDateTime createDate,
-                   LocalDateTime modifyDate) {
+                   Seller sellerUuid,
+                   BigInteger stock
+                   ) {
         this.productUuid = UtilMethod.createUUID();
-        this.name = name;
+        this.productName = productName;
         this. description = description;
         this.titleImg = titleImg;
         this.detailImg = detailImg;
@@ -81,16 +87,9 @@ public class Product {
         this.storeStatus = storeStatus;
         this.price = price;
         this.saleRate = saleRate;
-        this.createDate = createDate;
-        this.modifyDate = modifyDate;
-        this.useYn = "Y";
         this.sellerUuid = sellerUuid;
+        this.stock = stock;
     }
-
-    @PreUpdate
-    public void preUpdate() {this.createDate = LocalDateTime.now();}
-
-
 }
 
 

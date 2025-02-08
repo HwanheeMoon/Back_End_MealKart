@@ -1,4 +1,4 @@
-package com.springboot.mealkart.util;
+package com.springboot.mealkart.common.util;
 
 import java.util.UUID;
 import com.fasterxml.uuid.Generators;

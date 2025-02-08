@@ -1,27 +1,23 @@
 package com.springboot.mealkart.domain;
 
 
+import com.springboot.mealkart.common.domain.BaseDomain;
+import com.springboot.mealkart.common.util.JpaCryptoConverter;
 import com.springboot.mealkart.enumerate.SocialType;
 import com.springboot.mealkart.enumerate.UserRole;
-import com.springboot.mealkart.util.UtilMethod;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.springboot.mealkart.common.util.UtilMethod;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "TB_USER")
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseDomain {
 
     @Id
     @Column(name = "USER_UUID")
@@ -43,6 +39,7 @@ public class User {
     private String name;
 
     @Column(name = "PHONE_NUMBER")
+    //@Convert(converter = JpaCryptoConverter.class)
     private String phoneNumber;
 
     @Column(name = "SOCIAL_TYPE")
@@ -52,22 +49,34 @@ public class User {
     private String email;
 
     @Column(name = "PASSWORD")
+    //@Convert(converter = JpaCryptoConverter.class)
     private String password;
 
     @Column(name = "REFRESH_TOKEN")
     private String refreshToken;
 
-    @Column(name = "USE_YN")
+    //계정잠김여부
+    @Column(name = "ACNT_LOCK_YN")
+    private String acntLockYn;
+
+    //비밀번호오류횟수
+    @Column(name = "PSWD_ERR_NMTM")
+    private Integer pswdErrNmtm;
+
+    @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
 
-    @CreationTimestamp
-    @Column(name = "REG_DT")
-    private LocalDateTime createDate;
+    @PrePersist
+    public void prePersist() {
+        this.acntLockYn = StringUtils.isEmpty(this.acntLockYn) ? "N" : this.acntLockYn;
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
-    @UpdateTimestamp
-    @Column(name = "LAST_DT")
-    private LocalDateTime modifyDate;
-
+    @PreUpdate
+    public void PreUpdate() {
+        this.acntLockYn = StringUtils.isEmpty(this.acntLockYn) ? "N" : this.acntLockYn;
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
     @Builder
     public User (String name,
@@ -78,10 +87,10 @@ public class User {
                  String email,
                  String password,
                  String refreshToken,
+                 String acntLockYn,
+                 Integer pswdErrNmtm,
                  SocialType socialType,
-                 UserRole userRole,
-                 LocalDateTime createDate,
-                 LocalDateTime modifyDate) {
+                 UserRole userRole) {
         this.userUuid = UtilMethod.createUUID();
         this.name = name;
         this.zipcode = zipcode;
@@ -91,10 +100,9 @@ public class User {
         this.email = email;
         this.password = password;
         this.refreshToken = refreshToken;
+        this.acntLockYn = acntLockYn;
+        this.pswdErrNmtm = pswdErrNmtm;
         this.socialType = socialType;
         this.userRole = userRole;
-        this.useYn = "Y";
-        this.createDate = createDate;
-        this.modifyDate = modifyDate;
     }
 }

@@ -1,69 +1,68 @@
 package com.springboot.mealkart.domain;
 
-import com.springboot.mealkart.util.UtilMethod;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.springboot.mealkart.common.domain.BaseDomain;
+import com.springboot.mealkart.common.util.UtilMethod;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.ScrollableResults;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "TB_REFUND")
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class Refund {
+public class Refund extends BaseDomain {
 
     @Id
     @Column(name = "REFUND_UUID")
     private String refundUuid;
 
-    @Column(name = "ORDERING_UUID")
-    private String orderingUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDER_DEATAIL_UUID")
+    private OrderingDetail orderDetailUuid;
 
-    @Column(name = "PAYMENT_UUID")
-    private String paymentUuid;
+    // 취소환불 사유 (단순변심, 배송지연, 상품결함, 기타)
+    @Column(name = "REASON_CD")
+    private String reasonCd;
 
-    @Column(name = "REASON")
-    private String reason;
+    @Column(name = "REASON_DETAIL")
+    private String reasonDetail;
+
+    // 판매자 답변 입력
+    @Column(name = "ANWSER_DETAIL")
+    private String answerDetail;
 
     // 취소(001) , 반품(002)
     @Column(name = "REFUND_CD")
     private String refundCd;
 
-    @Column(name = "USE_YN")
+    @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
 
-    @CreationTimestamp
-    @Column(name = "REG_DT")
-    private LocalDateTime createDate;
+    @PrePersist
+    public void prePersist() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
-    @UpdateTimestamp
-    @Column(name = "LAST_DT")
-    private LocalDateTime modifyDate;
+    @PreUpdate
+    public void PreUpdate() {
+        this.useYn = StringUtils.isEmpty(this.useYn) ? "Y" : this.useYn;
+    }
 
     @Builder
-    public Refund (String reason,
+    public Refund (String reasonCd,
+                   String reasonDetail,
+                   String answerDetail,
                    String refundCd,
-                   String orderingUuid,
-                   String paymentUuid,
-                   LocalDateTime createDate,
-                   LocalDateTime modifyDate) {
+                   OrderingDetail orderDetailUuid) {
         this.refundUuid = UtilMethod.createUUID();
-        this.reason = reason;
+        this.reasonCd = reasonCd;
+        this.reasonDetail = reasonDetail;
+        this.answerDetail = answerDetail;
         this.refundCd = refundCd;
-        this.orderingUuid = orderingUuid;
-        this.paymentUuid = paymentUuid;
-        this.useYn = "Y";
-        this.createDate = createDate;
-        this.modifyDate = modifyDate;
+        this.orderDetailUuid = orderDetailUuid;
     }
 
 }
