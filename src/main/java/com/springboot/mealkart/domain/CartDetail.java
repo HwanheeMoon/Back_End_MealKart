@@ -7,15 +7,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Persistable;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "TB_CART_DETAIL")
 @Getter
+@IdClass(CartDetailPK.class)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class CartDetail extends BaseDomain {
+public class CartDetail extends BaseDomain implements Persistable<CartDetailPK> {
 
-    // TODO 복합키 설정 필요
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CART_UUID")
@@ -55,4 +56,17 @@ public class CartDetail extends BaseDomain {
         this.productUuid = productUuid;
         this.count = count;
     }
+    @Override
+    public CartDetailPK getId(){
+        return CartDetailPK.builder()
+                .CartUuid(this.cartUuid.getCartUuid())
+                .CartDetailUuid(this.cartDetailUuid)
+                .build();
+
+    }
+    @Override
+    public boolean isNew() {
+        return getCreateDate() == null;
+    }
+
 }

@@ -19,12 +19,15 @@ public class Seller extends BaseDomain {
     @Column(name = "SELLER_UUID")
     private String sellerUuid;
 
-    @Column(name = "BRAND_NAME")
-    private String brandName;
-
+    // 사업자 번호
     @Column(name = "SELLER_NUMBER")
     private String sellerNumber;
 
+    // 브랜드
+    @Column(name = "BRAND_NAME")
+    private String brandName;
+
+    // 배송비
     @Column(name = "DELIVERY_FEE")
     private Integer deliveryFee;
 

@@ -20,7 +20,7 @@ public class Review extends BaseDomain {
     private String reviewUuid;
 
     @Column(name = "SCORE")
-    private Float score;
+    private Integer score;
 
     @Column(name = "CONTENT")
     private String content;
@@ -36,9 +36,6 @@ public class Review extends BaseDomain {
     @JoinColumn(name = "USER_UUID")
     private User userUuid;
 
-    @Column(name = "USER_NAME")
-    private String userName;
-
     @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
 
@@ -53,18 +50,16 @@ public class Review extends BaseDomain {
     }
 
     @Builder
-    public Review (Float score,
+    public Review (Integer score,
                    String content,
                    String image,
                    Product productUuid,
-                   User userUuid,
-                   String userName) {
+                   User userUuid) {
         this.reviewUuid = UtilMethod.createUUID();
         this.score = score;
         this.content = content;
         this.image = image;
         this.productUuid = productUuid;
         this.userUuid = userUuid;
-        this.userName = userName;
     }
 }

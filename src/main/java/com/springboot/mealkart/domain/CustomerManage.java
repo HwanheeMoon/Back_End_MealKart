@@ -29,24 +29,18 @@ public class CustomerManage extends BaseDomain {
     private String attachment;
 
     // 셀러가 답변하는곳
-    @Column(name = "ANWSER")
-    private String answer;
+    @Column(name = "ANWSER_CONTENT")
+    private String answerContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRODUCT_UUID")
     private Product productUuid;
 
     // 접수(0), 처리중(1), 완료(2) => 상태 코드값
+    // 작성자 (구매자)
+    // 수정자 (판매자) 상태코드  0일 경우 구매자도 수정 가능
     @Column(name = "MANAGE_CD")
     private String manageCd;
-
-    // 작성자 (구매자)
-    @Column(name = "REG_ID")
-    private String regId;
-
-    // 수정자 (판매자) 상태코드  0일 경우 구매자도 수정 가능
-    @Column(name = "LAST_ID")
-    private String lastId;
 
     @Column(name = "USE_YN", columnDefinition = "CHAR(1)")
     private String useYn;
@@ -66,17 +60,14 @@ public class CustomerManage extends BaseDomain {
     public CustomerManage (String title,
                            String content,
                            String attachment,
-                           String answer,
-                           Product productUuid,
-                           String regId,
-                           String lastId) {
+                           String answerContent,
+                           Product productUuid) {
         this.customerManageUuid = UtilMethod.createUUID();
         this.title = title;
         this.content = content;
         this.attachment = attachment;
-        this.answer = answer;
+        this.answerContent = answerContent;
         this.productUuid= productUuid;
-        this.regId = regId;
-        this.lastId = lastId;
+
     }
 }

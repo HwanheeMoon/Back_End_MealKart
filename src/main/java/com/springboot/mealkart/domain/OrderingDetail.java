@@ -8,15 +8,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Persistable;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "TB_ORDERING_DETAIL")
 @Getter
+@IdClass(OrderingDetailPK.class)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderingDetail extends BaseDomain {
+public class OrderingDetail extends BaseDomain implements Persistable<OrderingDetailPK> {
 
-    // TODO 복합키 설정 필요
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ORDER_UUID")
@@ -69,5 +70,16 @@ public class OrderingDetail extends BaseDomain {
         this.price = price;
         this.orderingCd = orderingCd;
         this.quantity = quantity;
+    }
+    @Override
+    public OrderingDetailPK getId(){
+        return OrderingDetailPK.builder()
+                .OrderingUuid(this.orderUuid.getOrderUuid())
+                .OrderingDetailUuid(this.orderDetailUuid)
+                .build();
+    }
+    @Override
+    public boolean isNew() {
+        return getCreateDate() == null;
     }
 }

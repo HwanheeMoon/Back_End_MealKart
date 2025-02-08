@@ -31,6 +31,7 @@ public class Payment extends BaseDomain {
     @Column(name = "PAYMENT_AMT")
     private Integer paymentAmt;
 
+    // TODO EMUN클래스로 변경 필요
     @Column(name = "PAYMENT_TYPE")
     private String paymentType;
 

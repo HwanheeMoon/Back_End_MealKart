@@ -39,7 +39,7 @@ public class User extends BaseDomain {
     private String name;
 
     @Column(name = "PHONE_NUMBER")
-    @Convert(converter = JpaCryptoConverter.class)
+    //@Convert(converter = JpaCryptoConverter.class)
     private String phoneNumber;
 
     @Column(name = "SOCIAL_TYPE")
@@ -49,7 +49,7 @@ public class User extends BaseDomain {
     private String email;
 
     @Column(name = "PASSWORD")
-    @Convert(converter = JpaCryptoConverter.class)
+    //@Convert(converter = JpaCryptoConverter.class)
     private String password;
 
     @Column(name = "REFRESH_TOKEN")
